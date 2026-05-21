@@ -2,7 +2,7 @@
 
 "on":
   push:
-    branches: [main]  # or [master] — match your actual default branch
+    branches: [master]  # or [master] — match your actual default branch
   workflow_dispatch:
 
 permissions:
