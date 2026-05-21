@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="js/config.js" onerror="console.log('No local config')"></script>
   <title>USL Soccer Trail · 2026 FIFA World Cup</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/usl-logo-placeholder.png" type="image/png">
@@ -295,7 +296,6 @@
 
 <script>
 // ─── Landing Map ──────────────────────────────────────────────────────────────
-const MAPS_API_KEY = 'YOUR_MAPS_API_KEY'; // replaced at deploy time
 
 const CLUBS = [
   {
@@ -421,6 +421,5 @@ document.head.appendChild(script);
   });
 })();
 </script>
-
 </body>
 </html>

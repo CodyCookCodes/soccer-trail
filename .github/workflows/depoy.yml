@@ -1,8 +1,8 @@
 ﻿name: Deploy USL Soccer Trail
 
-on:
+"on":
   push:
-    branches: [main]
+    branches: [main]  # or [master] — match your actual default branch
   workflow_dispatch:
 
 permissions:
@@ -26,9 +26,7 @@ jobs:
 
       - name: Inject Maps API key
         run: |
-          # Inject into landing page
           sed -i "s/YOUR_MAPS_API_KEY/${{ secrets.MAPS_API_KEY }}/g" index.html
-          # Inject into main.js for club pages
           echo "const MAPS_API_KEY = '${{ secrets.MAPS_API_KEY }}';" >> js/main.js
 
       - name: Bump service worker cache version
