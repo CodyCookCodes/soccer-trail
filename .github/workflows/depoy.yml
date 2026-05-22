@@ -1,8 +1,8 @@
-﻿name: Deploy USL Soccer Trail
+﻿name: Deploy to GitHub Pages
 
-"on":
+on:
   push:
-    branches: [master]  # or [master] — match your actual default branch
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,20 +20,17 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Inject Maps API key
         run: |
-          sed -i "s/YOUR_MAPS_API_KEY/${{ secrets.MAPS_API_KEY }}/g" index.html
-          echo "const MAPS_API_KEY = '${{ secrets.MAPS_API_KEY }}';" >> js/main.js
+          echo "const MAPS_API_KEY = '${{ secrets.MAPS_API_KEY }}';" >> js/constants.js
 
       - name: Bump service worker cache version
-        run: |
-          if [ -f sw.js ]; then
-            sed -i "s/soccertrail-v[0-9]*/soccertrail-$(date +%Y%m%d%H%M)/g" sw.js
-          fi
+        run: sed -i "s/soccertrail-v[0-9]*/soccertrail-$(date +%Y%m%d%H%M)/g" sw.js
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
