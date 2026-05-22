@@ -29,9 +29,6 @@ jobs:
         run: |
           echo "const MAPS_API_KEY = \"${{ secrets.MAPS_API_KEY }}\";" >> js/constants.js
 
-      - name: Bump service worker cache version
-        run: sed -i "s/soccertrail-v[0-9]*/soccertrail-$(date +%Y%m%d%H%M)/g" sw.js
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
