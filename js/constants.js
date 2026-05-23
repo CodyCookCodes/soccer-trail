@@ -1,32 +1,13 @@
 // ─── Club Configuration ───────────────────────────────────────────────────────
-// Each club page sets window.CLUB_CONFIG before loading this file
-// window.CLUB_CONFIG = {
-//   name:       'Oakland Roots SC',
-//   city:       'Oakland',
-//   region:     'East Bay, CA',
-//   color:      '#25B67C',
-//   sheet_id:   '2PACX-...',   // the published sheet ID
-//   gids: {
-//     bars:         '0',
-//     matches:      '499767530',
-//     watchparties: '696168736',
-//     hotels:       '737220771',
-//     restaurants:  '79488506',
-//   }
-// }
+// window.CLUB_CONFIG is set by clubs.js before this file loads
+// ─────────────────────────────────────────────────────────────────────────────
 
 const cfg = window.CLUB_CONFIG || {};
-const BASE = cfg.sheet_id
-  ? `https://docs.google.com/spreadsheets/d/e/${cfg.sheet_id}/pub?single=true&output=csv`
-  : null;
 
-const gid = (id) => BASE ? `${BASE}&gid=${id}` : null;
-
-const SHEET_CSV_URL        = gid(cfg.gids?.bars         || '0');
-const MATCHES_CSV_URL      = gid(cfg.gids?.matches      || '499767530');
-const WATCH_PARTIES_CSV_URL= gid(cfg.gids?.watchparties || '696168736');
-const HOTELS_CSV_URL       = gid(cfg.gids?.hotels       || '737220771');
-const RESTAURANTS_CSV_URL  = gid(cfg.gids?.restaurants  || '79488506');
+// ─── Airtable ─────────────────────────────────────────────────────────────────
+const AIRTABLE_BASE_ID = 'app8vW4D9KnDWCJr8';
+// AIRTABLE_API_KEY and MAPS_API_KEY are defined in config.js (local)
+// or appended here by GitHub Actions at deploy time
 
 // ─── Country → flagcdn code map ───────────────────────────────────────────────
 const FLAGS = {
@@ -69,7 +50,7 @@ const MAP_STYLE = [
   { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f0f3f8' }] },
 ];
 
-// ─── Map pin SVGs (same shapes, updated for light theme) ──────────────────────
+// ─── Map pin SVGs ─────────────────────────────────────────────────────────────
 const ORANGE_PIN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
   <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z"
@@ -105,7 +86,6 @@ const YELLOW_PIN_SVG = `
   <circle cx="14" cy="14" r="5" fill="#ffffff" opacity="0.7"/>
 </svg>`;
 
-// Club pin uses the club's primary color from CLUB_CONFIG
 const CLUB_PIN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
   <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z"
@@ -113,5 +93,4 @@ const CLUB_PIN_SVG = `
   <circle cx="14" cy="14" r="5" fill="#ffffff" opacity="0.9"/>
 </svg>`;
 
-// For OSG/Watch Party pins — use club color
 const ROOTS_PIN_SVG = CLUB_PIN_SVG;

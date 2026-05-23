@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="js/config.js" onerror="console.log('No local config')"></script>
-  <script src="js/constants.js"></script>
+  <script src="/js/config.js" onerror="console.log('No local config')"></script>
+  <script src="/js/clubs.js"></script>
+  <script src="/js/constants.js"></script>
   <title>USL Soccer Trail · 2026 FIFA World Cup</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="assets/usl-logo-placeholder.png" type="image/png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/assets/usl-favicon.png" type="image/png">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -23,7 +24,6 @@
   <meta property="og:url" content="https://uslsoccertrail.com">
   <meta property="og:type" content="website">
   <style>
-    /* Landing page specific */
     .hero {
       background: var(--usl-navy);
       padding: 48px 24px 40px;
@@ -31,7 +31,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .hero::before {
       content: '';
       position: absolute;
@@ -41,7 +40,6 @@
         radial-gradient(ellipse at 80% 50%, rgba(200,169,110,0.1) 0%, transparent 50%);
       pointer-events: none;
     }
-
     .hero-eyebrow {
       font-family: 'United Sans Cond', 'Arial Narrow', Arial, sans-serif;
       font-size: 0.7rem;
@@ -51,7 +49,6 @@
       color: var(--usl-gold);
       margin-bottom: 12px;
     }
-
     .hero-title {
       font-family: 'United Sans Cond', 'Arial Narrow', Arial, sans-serif;
       font-size: 3.5rem;
@@ -62,16 +59,13 @@
       line-height: 0.95;
       margin-bottom: 8px;
     }
-
     .hero-title span { color: var(--usl-red); }
-
     .hero-subtitle {
       font-size: 0.85rem;
       color: rgba(255,255,255,0.55);
       margin-bottom: 32px;
       letter-spacing: 1px;
     }
-
     .hero-cta {
       display: inline-block;
       background: var(--usl-red);
@@ -86,9 +80,7 @@
       border-radius: 4px;
       transition: background 0.2s;
     }
-
     .hero-cta:hover { background: #c4001f; }
-
     .section-heading {
       font-family: 'United Sans Cond', 'Arial Narrow', Arial, sans-serif;
       font-size: 0.7rem;
@@ -99,19 +91,16 @@
       text-align: center;
       margin-bottom: 28px;
     }
-
     .clubs-section {
       max-width: 960px;
       margin: 0 auto;
       padding: 48px 24px;
     }
-
     #landing-map {
       width: 100%;
       height: 480px;
       background: #e8edf2;
     }
-
     .map-overlay-label {
       position: absolute;
       background: var(--usl-navy);
@@ -128,7 +117,6 @@
       z-index: 10;
       pointer-events: none;
     }
-
     .coming-soon-badge {
       display: inline-block;
       font-size: 0.6rem;
@@ -140,12 +128,10 @@
       padding: 2px 8px;
       border-radius: 3px;
     }
-
     .stats-strip {
       background: var(--usl-red);
       padding: 20px 24px;
     }
-
     .stats-inner {
       max-width: 960px;
       margin: 0 auto;
@@ -154,12 +140,7 @@
       gap: 48px;
       flex-wrap: wrap;
     }
-
-    .stat {
-      text-align: center;
-      color: #fff;
-    }
-
+    .stat { text-align: center; color: #fff; }
     .stat-number {
       font-family: 'United Sans Cond', 'Arial Narrow', Arial, sans-serif;
       font-size: 2rem;
@@ -167,7 +148,6 @@
       line-height: 1;
       color: #fff;
     }
-
     .stat-label {
       font-size: 0.7rem;
       letter-spacing: 1.5px;
@@ -175,7 +155,6 @@
       color: rgba(255,255,255,0.7);
       margin-top: 2px;
     }
-
     @media (max-width: 600px) {
       .hero-title { font-size: 2.2rem; }
       .stats-inner { gap: 28px; }
@@ -185,20 +164,17 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-top">2026 FIFA World Cup · Official Fan Guide</div>
   <div class="header-inner">
     <div class="header-logos">
-      <img src="assets/usl-logo-placeholder.png" alt="USL Championship" class="header-logo header-logo--usl">
+      <img src="/assets/usl-logo-placeholder.png" alt="USL Championship" class="header-logo header-logo--usl">
     </div>
   </div>
 </header>
 
-<!-- MOSAIC DIVIDER -->
 <div class="mosaic-divider"></div>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-eyebrow">USL Championship · Official Fan Guide</div>
   <div class="hero-title">Soccer<br><span>Trail</span></div>
@@ -206,11 +182,10 @@
   <a href="#clubs" class="hero-cta">Find Your Club →</a>
 </div>
 
-<!-- STATS STRIP -->
 <div class="stats-strip">
   <div class="stats-inner">
     <div class="stat">
-      <div class="stat-number">3</div>
+      <div class="stat-number" id="stat-clubs">3</div>
       <div class="stat-label">USL Cities</div>
     </div>
     <div class="stat">
@@ -228,66 +203,34 @@
   </div>
 </div>
 
-<!-- MOSAIC DIVIDER -->
 <div class="mosaic-divider"></div>
 
-<!-- LANDING MAP -->
 <div style="position:relative;">
   <div class="map-overlay-label">Select a Club City</div>
   <div id="landing-map"></div>
 </div>
 
-<!-- MOSAIC DIVIDER -->
 <div class="mosaic-divider"></div>
 
-<!-- CLUBS SECTION -->
+<!-- CLUBS GRID — built dynamically from CLUBS_REGISTRY -->
 <div class="clubs-section" id="clubs">
   <div class="section-heading">Select Your Club</div>
-  <div class="club-grid">
-
-    <!-- Oakland Roots SC -->
-    <a href="oakland-roots" class="club-card">
-      <img src="assets/Oakland_Roots.png" alt="Oakland Roots SC" class="club-card-logo">
-      <div class="club-card-name">Oakland Roots SC</div>
-      <div class="club-card-city">Oakland · East Bay, CA</div>
-      <div class="club-card-badge">Live Now</div>
-    </a>
-
-    <!-- Tampa Bay Rowdies -->
-    <a href="tampa-bay-rowdies" class="club-card">
-      <img src="assets/rowdies-logo-placeholder.png" alt="Tampa Bay Rowdies" class="club-card-logo">
-      <div class="club-card-name">Tampa Bay Rowdies</div>
-      <div class="club-card-city">Tampa Bay, FL</div>
-      <div class="coming-soon-badge">Coming Soon</div>
-    </a>
-
-    <!-- Louisville City FC -->
-    <a href="louisville-city" class="club-card">
-      <img src="assets/louisville-logo-placeholder.png" alt="Louisville City FC" class="club-card-logo">
-      <div class="club-card-name">Louisville City FC</div>
-      <div class="club-card-city">Louisville, KY</div>
-      <div class="coming-soon-badge">Coming Soon</div>
-    </a>
-
-  </div>
+  <div class="club-grid" id="clubGrid"></div>
 </div>
 
-<!-- MOSAIC DIVIDER -->
 <div class="mosaic-divider"></div>
 
-<!-- FOOTER -->
 <footer>
   USL Soccer Trail 2026 &nbsp;|&nbsp;
-  <a href="privacy">Privacy Policy</a> &nbsp;|&nbsp;
-  <a href="terms">Terms of Service</a> &nbsp;|&nbsp;
+  <a href="/privacy">Privacy Policy</a> &nbsp;|&nbsp;
+  <a href="/terms">Terms of Service</a> &nbsp;|&nbsp;
   <a href="https://www.uslsoccer.com" target="_blank">uslsoccer.com</a>
 </footer>
 
-<!-- COOKIE CONSENT -->
 <div id="cookie-banner" style="display:none;">
   <p style="flex:1;min-width:200px;font-size:0.8rem;color:rgba(255,255,255,0.7);margin:0;">
-    This website utilizes technologies such as cookies to enable essential site functionality, as well as for analytics, personalization, and targeted advertising.
-    <a href="privacy" target="_blank" style="color:var(--usl-gold);">Privacy Policy</a>
+    This website uses cookies for analytics and personalization.
+    <a href="/privacy" target="_blank" style="color:var(--usl-gold);">Privacy Policy</a>
   </p>
   <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
     <button id="cookieAccept" style="background:var(--usl-red);color:#fff;border:none;padding:8px 18px;font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">Accept</button>
@@ -296,52 +239,39 @@
 </div>
 
 <script>
-// ─── Landing Map ──────────────────────────────────────────────────────────────
+// ─── Build club grid from registry ───────────────────────────────────────────
+(function() {
+  const grid = document.getElementById('clubGrid');
+  const entries = Object.entries(CLUBS_REGISTRY);
 
-const CLUBS = [
-  {
-    name: 'Oakland Roots SC',
-    city: 'Oakland, CA',
-    lat: 37.8044,
-    lng: -122.2712,
-    url: 'oakland-roots',
-    color: '#25B67C',
-  },
-  {
-    name: 'Tampa Bay Rowdies',
-    city: 'Tampa Bay, FL',
-    lat: 27.9506,
-    lng: -82.4572,
-    url: 'tampa-bay-rowdies',
-    color: '#009639',
-    comingSoon: true,
-  },
-  {
-    name: 'Louisville City FC',
-    city: 'Louisville, KY',
-    lat: 38.2527,
-    lng: -85.7585,
-    url: 'louisville-city',
-    color: '#6C1D45',
-    comingSoon: true,
-  },
-];
+  // Update stat
+  document.getElementById('stat-clubs').textContent = entries.length;
 
+  grid.innerHTML = entries.map(([slug, club]) => `
+    <a href="/club/?team=${slug}" class="club-card">
+      ${club.logo ? `<img src="${club.logo}" alt="${club.name}" class="club-card-logo">` : ''}
+      <div class="club-card-name">${club.name}</div>
+      <div class="club-card-city">${club.region}</div>
+      ${club.live
+        ? `<div class="club-card-badge">Live Now</div>`
+        : `<div class="coming-soon-badge">Coming Soon</div>`
+      }
+    </a>
+  `).join('');
+})();
+
+// ─── Landing map ──────────────────────────────────────────────────────────────
 const USL_MAP_STYLE = [
   { elementType: 'geometry', stylers: [{ color: '#f5f7fa' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#6b7a9a' }] },
   { elementType: 'labels.text.stroke', stylers: [{ color: '#f5f7fa' }] },
   { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#e8edf5' }] },
   { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#dde3ee' }] },
-  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9aa4bb' }] },
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c8d8e8' }] },
-  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#9aa4bb' }] },
-  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#eef1f7' }] },
   { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
   { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
   { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#ddeedd' }] },
   { featureType: 'transit', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#c8d0e0' }] },
   { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#00245D' }] },
   { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f0f3f8' }] },
 ];
@@ -361,7 +291,9 @@ function initLandingMap() {
 
   const infoWindow = new google.maps.InfoWindow();
 
-  CLUBS.forEach(club => {
+  Object.entries(CLUBS_REGISTRY).forEach(([slug, club]) => {
+    if (!club.center) return;
+
     const pinSvg = `
       <svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 28 36">
         <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z"
@@ -370,7 +302,7 @@ function initLandingMap() {
       </svg>`;
 
     const marker = new google.maps.Marker({
-      position: { lat: club.lat, lng: club.lng },
+      position: club.center,
       map,
       title: club.name,
       icon: {
@@ -382,13 +314,14 @@ function initLandingMap() {
 
     marker.addListener('click', () => {
       const content = `
-        <div style="background:#fff;padding:12px 14px;min-width:160px;font-family:Arial,sans-serif;">
+        <div style="background:#fff;padding:12px 14px;min-width:180px;font-family:Arial,sans-serif;">
+          ${club.logo ? `<div style="text-align:center;margin-bottom:8px;margin-top:-12px;"><img src="${club.logo}" style="width:56px;height:56px;object-fit:contain;"></div>` : ''}
           <div style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#00245D;margin-bottom:4px;">USL Soccer Trail</div>
           <div style="font-size:1rem;font-weight:700;color:#0A1628;margin-bottom:2px;">${club.name}</div>
-          <div style="font-size:0.75rem;color:#6b7a9a;margin-bottom:10px;">${club.city}</div>
-          ${club.comingSoon
-            ? `<span style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:#999;text-transform:uppercase;border:1px solid #ddd;padding:2px 8px;border-radius:3px;">Coming Soon</span>`
-            : `<a href="${club.url}" style="display:inline-block;background:#E4002B;color:#fff;font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;text-decoration:none;border-radius:3px;">View Trail →</a>`
+          <div style="font-size:0.75rem;color:#6b7a9a;margin-bottom:10px;">${club.region}</div>
+          ${club.live
+            ? `<a href="/club/?team=${slug}" style="display:inline-block;background:#E4002B;color:#fff;font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;text-decoration:none;border-radius:3px;">View Trail →</a>`
+            : `<span style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:#999;text-transform:uppercase;border:1px solid #ddd;padding:2px 8px;border-radius:3px;">Coming Soon</span>`
           }
         </div>`;
       infoWindow.setContent(content);
@@ -418,7 +351,6 @@ document.head.appendChild(script);
   document.getElementById('cookieDeny').addEventListener('click', () => {
     localStorage.setItem(LS_KEY, 'denied');
     banner.style.display = 'none';
-    gtag('consent', 'update', { analytics_storage: 'denied' });
   });
 })();
 </script>

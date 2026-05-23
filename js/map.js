@@ -192,7 +192,7 @@ window.buildMap = function(bars) {
   });
 };
 
-// ─── Place OSG Events markers (green pins, hidden until OSG Events filter active) ──
+// ─── Place Events markers (green pins, hidden until Events filter active) ──
 window.buildWatchPartyMarkers = function(watchParties) {
   if (!gMap || !watchParties.length) return;
 
@@ -206,7 +206,7 @@ window.buildWatchPartyMarkers = function(watchParties) {
     const createHiddenMarker = (pos) => {
       const marker = new google.maps.Marker({
         position: pos,
-        map: null,  // hidden by default — only shown when OSG Events filter is active
+        map: null,  // hidden by default — only shown when Events filter is active
         title: wp.name,
         icon: makeWatchPartyPinIcon(false),
         optimized: false,
@@ -226,7 +226,7 @@ window.buildWatchPartyMarkers = function(watchParties) {
       }
     }
 
-    // If this OSG Events matches an existing bar pin, reuse its position
+    // If this Events matches an existing bar pin, reuse its position
     if (safePlaceId) {
       const existing = gMarkers.find(m => m.placeId === safePlaceId);
       if (existing) {
@@ -239,7 +239,7 @@ window.buildWatchPartyMarkers = function(watchParties) {
     
     geocoder.geocode(request, (results, status) => {
       if (status !== 'OK' || !results[0]) {
-        console.warn(`OSG Events geocode failed for ${wp.name}: ${status}`);
+        console.warn(`Events geocode failed for ${wp.name}: ${status}`);
         return;
       }
       createHiddenMarker(results[0].geometry.location);
@@ -318,7 +318,7 @@ function buildHotelInfoWindow(hotel, marker) {
   gInfoWindow.open(gMap, marker);
 }
 
-// ─── OSG Events InfoWindow content ──────────────────────────────────────────
+// ─── Events InfoWindow content ──────────────────────────────────────────
 function buildWatchPartyInfoWindow(wp, marker) {
   const matchLine = (wp.home_team && wp.away_team)
     ? `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
@@ -334,7 +334,7 @@ function buildWatchPartyInfoWindow(wp, marker) {
 
   gInfoWindow.setContent(`
     <div style="background:#1a1a1a;color:#f0f0f0;padding:10px 12px;border-radius:6px;min-width:180px;max-width:240px;">
-      <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#25B67C;margin-bottom:5px;">OSG Events</div>
+      <div style="font-size:0.65rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#25B67C;margin-bottom:5px;">Events</div>
       <div style="font-weight:700;white-space:normal;padding-right:50px;overflow-wrap:break-word;font-size:1.35rem;color:#ffffff;margin-bottom:6px;">${esc(wp.name)}</div>
       ${matchLine}
       ${dateLine}
@@ -450,7 +450,7 @@ function initClusterer(visibleMarkers) {
   });
 }
 
-// ─── Show/hide OSG Events pins ────────────────────────────────────────────────
+// ─── Show/hide Events pins ────────────────────────────────────────────────
 window.filterMapWatchParties = function() {
   if (gInfoWindow) gInfoWindow.close();
   if (gClusterer) gClusterer.clearMarkers();
@@ -513,7 +513,7 @@ window.filterMapPins = function(nation) {
 window.filterMapMulti = function(types, nations) {
   if (gInfoWindow) gInfoWindow.close();
 
-  // OSG Events pins — never clustered, always individually managed
+  // Events pins — never clustered, always individually managed
   wMarkers.forEach(({ marker }) =>
     marker.setMap(types.has('osgevents') ? gMap : null)
   );

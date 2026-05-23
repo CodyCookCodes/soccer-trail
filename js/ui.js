@@ -34,7 +34,7 @@ function updateDropdownLabel() {
 
   const typeLabels = {
     watchparties: 'Watch Parties',
-    osgevents:    'OSG Events',
+    osgevents:    'Events',
     hotels:       'Hotels',
     restaurants:  'Restaurants',
   };
@@ -65,7 +65,7 @@ function applyFilters() {
   const showBars = types.has('watchparties') || nations.size > 0;
   document.getElementById('barList').classList.toggle('hidden', !showBars);
 
-  // Show/hide OSG Events
+  // Show/hide Events
   const wpList = document.getElementById('watchPartyList');
   if (wpList) {
     if (types.has('osgevents')) {
@@ -139,7 +139,7 @@ function buildPage(bars) {
         <input type="checkbox" data-type="watchparties" checked> Watch Parties
       </label>
       <label class="filter-dropdown-item">
-        <input type="checkbox" data-type="osgevents"> OSG Events
+        <input type="checkbox" data-type="osgevents"> Events
       </label>
       <label class="filter-dropdown-item">
         <input type="checkbox" data-type="hotels"> Hotels
@@ -201,7 +201,7 @@ function buildPage(bars) {
   wpSection.innerHTML = `
     <div class="category-block">
       <div class="category-header">
-        <span class="cat-title" style="color:var(--green)">Official OSG Events</span>
+        <span class="cat-title" style="color:var(--green)">Official Events</span>
       </div>
       <div id="watchPartyCards" class="venue-grid">
         <div style="color:var(--muted);font-size:0.9rem;padding:10px 0;">Loading watch parties…</div>
@@ -213,7 +213,7 @@ function buildPage(bars) {
   applyFilters();
 }
 
-// ─── Build a OSG Events card ─────────────────────────────────────────────────
+// ─── Build a Events card ─────────────────────────────────────────────────
 function buildWatchPartyCard(wp) {
   const isCatchAll = !wp.match_id || !wp.match_id.trim();
   let matchLine = '', dateLine = '';
@@ -264,7 +264,7 @@ function buildWatchPartyCard(wp) {
     </div>`;
 }
 
-// ─── Populate OSG Events cards ───────────────────────────────────────────────
+// ─── Populate Events cards ───────────────────────────────────────────────
 function renderWatchPartyCards() {
   const container = document.getElementById('watchPartyCards');
   if (!container) return;
@@ -365,7 +365,12 @@ function renderHotelCards(hotels) {
         </div>
         <div id="hotelCards" class="venue-grid"></div>
       </div>`;
-    document.getElementById('barList').before(section);
+    // Insert after watchPartyList if it exists, else before barList
+    const wpList = document.getElementById('watchPartyList');
+    if (wpList) wpList.after(section);
+    else document.getElementById('barList').before(section);
+    // Always start hidden — applyFilters controls visibility
+    section.classList.add('hidden');
   }
   const container = document.getElementById('hotelCards');
   if (container) container.innerHTML = hotels.map(buildHotelCard).join('');
@@ -384,7 +389,14 @@ function renderRestaurantCards(restaurants) {
         </div>
         <div id="restaurantCards" class="venue-grid"></div>
       </div>`;
-    document.getElementById('barList').before(section);
+    // Insert after hotelList if it exists, else after watchPartyList, else before barList
+    const hotelList = document.getElementById('hotelList');
+    const wpList2 = document.getElementById('watchPartyList');
+    if (hotelList) hotelList.after(section);
+    else if (wpList2) wpList2.after(section);
+    else document.getElementById('barList').before(section);
+    // Always start hidden — applyFilters controls visibility
+    section.classList.add('hidden');
   }
   const container = document.getElementById('restaurantCards');
   if (container) container.innerHTML = restaurants.map(buildRestaurantCard).join('');

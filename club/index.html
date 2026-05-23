@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Load club registry, resolve config from ?team= param -->
+  <script src="/js/config.js" onerror="console.log('No local config')"></script>
+  <script src="/js/clubs.js"></script>
+  <script>
+    window.CLUB_CONFIG = resolveClubConfig();
+
+    // If no valid club found, redirect home
+    if (!window.CLUB_CONFIG) {
+      window.location.href = '/';
+    }
+
+    // If club is not live yet, show coming soon (handled below in body)
+  </script>
+  <script src="/js/constants.js"></script>
+
+  <!-- Page title and meta filled dynamically -->
+  <title id="page-title">Soccer Trail · USL Championship</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/assets/usl-favicon.png" type="image/png">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <script>
+    // Set page meta from club config as early as possible
+    (function() {
+      const cfg = window.CLUB_CONFIG;
+      if (!cfg) return;
+      document.getElementById('page-title').textContent = `Soccer Trail · ${cfg.name} · 2026 World Cup`;
+      document.querySelector('meta[name="description"]') && (document.querySelector('meta[name="description"]').content =
+        `Find bars, watch parties, hotels, and restaurants to watch the 2026 FIFA World Cup in ${cfg.city}. Presented by ${cfg.name}.`);
+    })();
+  </script>
+
+  <meta name="description" content="Find bars, watch parties, hotels, and restaurants for the 2026 FIFA World Cup. USL Soccer Trail.">
+  <meta property="og:title" content="USL Soccer Trail · 2026 World Cup">
+  <meta property="og:image" content="https://uslsoccertrail.com/assets/og-image.png">
+  <meta property="og:url" content="https://uslsoccertrail.com/club/">
+  <meta property="og:type" content="website">
+</head>
+<body>
+
+<!-- PAGE LOADER -->
+<div id="page-loader">
+  <div id="loader-logo-wrap">
+    <!-- Logo set dynamically -->
+  </div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top" id="header-top-text">USL Soccer Trail 2026</div>
+  <div class="header-inner">
+    <div class="header-logos">
+      <a href="/" style="display:flex;align-items:center;">
+        <img src="/assets/usl-logo-placeholder.png" alt="USL Championship" class="header-logo header-logo--usl" style="height:32px;opacity:1;">
+      </a>
+      <div class="header-title">
+        <h1>Soccer Trail <span>2026</span></h1>
+        <div class="sub" id="header-sub">USL Championship</div>
+      </div>
+      <img id="header-club-logo" src="" alt="" class="header-logo" style="height:48px;">
+    </div>
+  </div>
+</header>
+
+<!-- MOSAIC DIVIDER -->
+<div class="mosaic-divider"></div>
+
+<!-- COMING SOON STATE (hidden by default, shown if club not live) -->
+<div id="coming-soon-state" style="display:none;">
+  <div style="text-align:center;padding:80px 24px;">
+    <div style="font-family:'United Sans Cond','Arial Narrow',Arial,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--usl-gold);margin-bottom:16px;">Coming Soon</div>
+    <div id="cs-club-name" style="font-family:'United Sans Cond','Arial Narrow',Arial,sans-serif;font-size:2.5rem;font-weight:700;color:#fff;text-transform:uppercase;margin-bottom:8px;"></div>
+    <div id="cs-club-region" style="font-size:0.9rem;color:rgba(255,255,255,0.4);margin-bottom:32px;"></div>
+    <a href="/" style="display:inline-block;background:var(--usl-red);color:#fff;font-family:'United Sans Cond','Arial Narrow',Arial,sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;text-decoration:none;border-radius:4px;">← All Clubs</a>
+  </div>
+</div>
+
+<!-- LIVE CONTENT (hidden until we confirm club is live) -->
+<div id="live-content" style="display:none;">
+
+  <!-- MATCH CAROUSEL -->
+  <section class="matches-section" id="matchCarousel">
+    <div class="matches-header">
+      <span class="matches-title">Match Schedule</span>
+      <div class="matches-nav">
+        <button class="match-nav-btn" id="matchPrev" aria-label="Previous">&#8592;</button>
+        <button class="match-nav-btn" id="matchNext" aria-label="Next">&#8594;</button>
+      </div>
+    </div>
+    <div class="matches-scroll">
+      <div class="matches-track" id="matchTrack">
+        <div style="color:rgba(255,255,255,0.3);font-size:0.8rem;padding:20px;">Loading schedule&#8230;</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOSAIC DIVIDER -->
+  <div class="mosaic-divider"></div>
+
+  <!-- NEXT EVENT BANNER -->
+  <div id="next-event-banner" style="display:none;">
+    <div style="background:var(--usl-navy);display:flex;overflow:hidden;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="padding:14px 20px;flex:1;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--usl-gold);margin-bottom:4px;">Next Event</div>
+          <div id="next-event-name" style="font-size:1.1rem;font-weight:700;color:#fff;font-family:'United Sans Cond','Arial Narrow',Arial,sans-serif;"></div>
+          <div id="next-event-details" style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:3px;"></div>
+        </div>
+        <button id="next-event-link"
+          onclick="filterWatchParties(); document.querySelector('.list-section').scrollIntoView({behavior:'smooth',block:'start'});"
+          style="display:none;background:var(--usl-red);color:#fff;font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:10px 20px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;border-radius:3px;">
+          See Events →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOSAIC DIVIDER -->
+  <div class="mosaic-divider"></div>
+
+  <!-- MAP -->
+  <div class="map-section">
+    <div id="map"></div>
+    <div id="map-loading" class="map-loading">
+      <div class="spinner"></div>
+      <p>Loading map&#8230;</p>
+    </div>
+  </div>
+
+  <!-- MOSAIC DIVIDER -->
+  <div class="mosaic-divider"></div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="filter-label">Filter:</div>
+    <div class="filter-buttons" id="filterButtons"></div>
+  </div>
+
+  <!-- VENUE LIST -->
+  <div class="list-section" id="barList">
+    <div class="state-box">
+      <div class="spinner"></div>
+      <p>Loading venues&#8230;</p>
+    </div>
+  </div>
+
+  <!-- MOSAIC DIVIDER -->
+  <div class="mosaic-divider"></div>
+
+</div><!-- /live-content -->
+
+<!-- FOOTER -->
+<footer>
+  <a href="/" style="color:rgba(255,255,255,0.4);text-decoration:none;font-size:0.7rem;letter-spacing:1px;">← All USL Cities</a>
+  <br><br>
+  <span id="footer-club-name">Soccer Trail 2026</span> &nbsp;|&nbsp;
+  <a id="footer-club-link" href="https://www.uslsoccer.com" target="_blank">uslsoccer.com</a>
+  <br>
+  <a href="/privacy">Privacy Policy</a> &nbsp;|&nbsp;
+  <a href="/terms">Terms of Service</a>
+</footer>
+
+<!-- COOKIE CONSENT -->
+<div id="cookie-banner" style="display:none;">
+  <p style="flex:1;min-width:200px;font-size:0.8rem;color:rgba(255,255,255,0.7);margin:0;">
+    This website uses cookies for analytics and personalization.
+    <a href="/privacy" target="_blank" style="color:var(--usl-gold);">Privacy Policy</a>
+  </p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
+    <button id="cookieAccept" style="background:var(--usl-red);color:#fff;border:none;padding:8px 18px;font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">Accept</button>
+    <button id="cookieDeny" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.3);padding:8px 18px;font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">Deny Non-Essential</button>
+  </div>
+</div>
+
+<!-- STICKY CTA -->
+<div class="sticky-cta" id="stickyCta"></div>
+
+<script>
+// ─── Bootstrap club page from CLUB_CONFIG ─────────────────────────────────────
+(function() {
+  const cfg = window.CLUB_CONFIG;
+  if (!cfg) return;
+
+  // Header
+  document.getElementById('header-top-text').textContent = `${cfg.name} · Soccer Trail 2026`;
+  document.getElementById('header-sub').textContent = cfg.region || cfg.city;
+  const clubLogo = document.getElementById('header-club-logo');
+  if (cfg.logo) { clubLogo.src = cfg.logo; clubLogo.alt = cfg.name; }
+
+  // Loader logo
+  document.getElementById('loader-logo-wrap').innerHTML = cfg.logo
+    ? `<img src="${cfg.logo}" alt="Loading" class="loader-logo loader-logo--color">`
+    : '';
+
+  // Footer
+  document.getElementById('footer-club-name').textContent = `Soccer Trail 2026 · ${cfg.name}`;
+
+  // Show coming soon or live content
+  if (!cfg.live) {
+    document.getElementById('coming-soon-state').style.display = 'block';
+    document.getElementById('cs-club-name').textContent = cfg.name;
+    document.getElementById('cs-club-region').textContent = cfg.region;
+    // Hide loader immediately for coming soon
+    const loader = document.getElementById('page-loader');
+    if (loader) { loader.style.display = 'none'; }
+  } else {
+    document.getElementById('live-content').style.display = 'block';
+  }
+
+  // Sticky CTA
+  const links = cfg.stickyLinks || [];
+  const cta = document.getElementById('stickyCta');
+  if (cta && links.length) {
+    cta.innerHTML = links.map(l =>
+      `<a href="${l.url}" target="_blank" class="sticky-cta-btn ${l.class}">${l.label}</a>`
+    ).join('');
+  }
+
+  // Cookie consent
+  const LS_KEY = 'wc_cookie_consent';
+  const banner = document.getElementById('cookie-banner');
+  if (!localStorage.getItem(LS_KEY)) {
+    setTimeout(() => { banner.style.display = 'flex'; }, 1500);
+  }
+  document.getElementById('cookieAccept').addEventListener('click', () => {
+    localStorage.setItem(LS_KEY, 'accepted');
+    banner.style.display = 'none';
+    gtag('consent', 'update', { analytics_storage: 'granted' });
+  });
+  document.getElementById('cookieDeny').addEventListener('click', () => {
+    localStorage.setItem(LS_KEY, 'denied');
+    banner.style.display = 'none';
+  });
+})();
+</script>
+
+<!-- Only load map/data scripts if club is live -->
+<script>
+if (window.CLUB_CONFIG && window.CLUB_CONFIG.live) {
+  const scripts = [
+    'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js',
+    '/js/utils.js',
+    '/js/airtable.js',
+    '/js/map.js',
+    '/js/ui.js',
+    '/js/matches.js',
+    '/js/main.js',
+  ];
+
+  // Load sequentially to guarantee order
+  function loadNext(i) {
+    if (i >= scripts.length) return;
+    const s = document.createElement('script');
+    s.src = scripts[i];
+    s.onload = () => loadNext(i + 1);
+    s.onerror = () => loadNext(i + 1);
+    document.body.appendChild(s);
+  }
+  loadNext(0);
+}
+</script>
+
+</body>
+</html>

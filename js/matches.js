@@ -1,51 +1,13 @@
 // ─── Matches Module ───────────────────────────────────────────────────────────
-// Matches sheet columns: match_id | date | time | home_team | away_team | home_score | away_score | stage | group
-// Watch Parties sheet columns: name | address | place_id | match_id
-
-// ─── Parse CSV for matches ────────────────────────────────────────────────────
-function parseMatchesCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
-  return lines.slice(1).map(line => {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i];
-      if (c === '"') { inQ = !inQ; }
-      else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += c; }
-    }
-    cols.push(cur.trim());
-    const row = {};
-    headers.forEach((h, i) => row[h] = (cols[i] || '').replace(/^"|"$/g, '').trim());
-    return row;
-  }).filter(row => row.date || row.home_team);
-}
-
-// ─── Parse CSV for watch parties ─────────────────────────────────────────────
-function parseWatchPartiesCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
-  return lines.slice(1).map(line => {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i];
-      if (c === '"') { inQ = !inQ; }
-      else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += c; }
-    }
-    cols.push(cur.trim());
-    const row = {};
-    headers.forEach((h, i) => row[h] = (cols[i] || '').replace(/^"|"$/g, '').trim());
-    return row;
-  }).filter(row => row.name);
-}
+// Data is fetched by main.js via Airtable — this file handles rendering only
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 function parseLocalDate(str) {
   if (!str) return null;
-  const [y, m, d] = str.split('-').map(Number);
+  // Handle both YYYY-MM-DD and ISO datetime strings from Airtable
+  const dateStr = str.includes('T') ? str.split('T')[0] : str;
+  const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d);
 }
 
@@ -75,28 +37,35 @@ function stageLabel(stage) {
 
 // ─── Single match row ─────────────────────────────────────────────────────────
 function buildMatchRow(match, watchPartyMatchIds, hasCatchAll) {
-  const hasScore = match.home_score !== '' && match.away_score !== '';
-  const homeWon = hasScore && Number(match.home_score) > Number(match.away_score);
-  const awayWon = hasScore && Number(match.away_score) > Number(match.home_score);
+  // Airtable returns undefined for empty fields — normalize everything
+  const homeScore = match.home_score != null ? String(match.home_score) : '';
+  const awayScore = match.away_score != null ? String(match.away_score) : '';
+  const time      = match.time || 'TBD';
+  const homeName  = match.home_team || 'TBD';
+  const awayName  = match.away_team || 'TBD';
+
+  const hasScore = homeScore !== '' && awayScore !== '';
+  const homeWon  = hasScore && Number(homeScore) > Number(awayScore);
+  const awayWon  = hasScore && Number(awayScore) > Number(homeScore);
 
   const scoreOrTime = hasScore
     ? `<span class="mr-score">
-         <span class="${homeWon ? 'score-win' : awayWon ? 'score-loss' : ''}">${esc(match.home_score)}</span>
+         <span class="${homeWon ? 'score-win' : awayWon ? 'score-loss' : ''}">${esc(homeScore)}</span>
          <span class="score-sep">–</span>
-         <span class="${awayWon ? 'score-win' : homeWon ? 'score-loss' : ''}">${esc(match.away_score)}</span>
+         <span class="${awayWon ? 'score-win' : homeWon ? 'score-loss' : ''}">${esc(awayScore)}</span>
        </span>`
-    : `<span class="mr-time">${esc(match.time || 'TBD')}</span>`;
+    : `<span class="mr-time">${esc(time)}</span>`;
 
   const groupInfo = match.group
     ? `<span class="mr-stage">${esc(stageLabel(match.stage))} · Grp ${esc(match.group)}</span>`
-    : `<span class="mr-stage">${esc(stageLabel(match.stage))}</span>`;
+    : `<span class="mr-stage">${esc(stageLabel(match.stage || ''))}</span>`;
 
-  const homeKey = (match.home_team || '').toLowerCase().trim();
-  const awayKey = (match.away_team || '').toLowerCase().trim();
+  const homeKey = homeName.toLowerCase().trim();
+  const awayKey = awayName.toLowerCase().trim();
 
   const hasWatchParty = hasCatchAll || (watchPartyMatchIds && watchPartyMatchIds.has(match.match_id));
   const watchPartyBadge = hasWatchParty
-    ? `<span class="mr-watch-party">Official OSG Events</span>`
+    ? `<span class="mr-watch-party">Official Events</span>`
     : '';
 
   const clickable = !hasScore;
@@ -106,13 +75,13 @@ function buildMatchRow(match, watchPartyMatchIds, hasCatchAll) {
          ${clickable ? `data-home="${homeKey}" data-away="${awayKey}" data-match-id="${esc(match.match_id || '')}" title="Filter bars for this match"` : ''}>
       <div class="mr-teams">
         <span class="mr-team">
-          ${getMatchFlag(match.home_team)}
-          <span class="mr-name ${homeWon ? 'team--winner' : ''}">${esc(match.home_team || 'TBD')}</span>
+          ${getMatchFlag(homeName)}
+          <span class="mr-name ${homeWon ? 'team--winner' : ''}">${esc(homeName)}</span>
         </span>
         <span class="mr-middle">${scoreOrTime}</span>
         <span class="mr-team mr-team--away">
-          <span class="mr-name ${awayWon ? 'team--winner' : ''}">${esc(match.away_team || 'TBD')}</span>
-          ${getMatchFlag(match.away_team)}
+          <span class="mr-name ${awayWon ? 'team--winner' : ''}">${esc(awayName)}</span>
+          ${getMatchFlag(awayName)}
         </span>
       </div>
       ${groupInfo}
@@ -123,7 +92,10 @@ function buildMatchRow(match, watchPartyMatchIds, hasCatchAll) {
 // ─── Day column card ──────────────────────────────────────────────────────────
 function buildDayCard(dateStr, matchesForDay, state, watchPartyMatchIds, hasCatchAll) {
   const date = parseLocalDate(dateStr);
-  const stateClass = { past: 'day-card--past', today: 'day-card--today', soon: 'day-card--soon', future: 'day-card--future' }[state] || '';
+  const stateClass = {
+    past: 'day-card--past', today: 'day-card--today',
+    soon: 'day-card--soon', future: 'day-card--future'
+  }[state] || '';
 
   return `
     <div class="day-card ${stateClass}">
@@ -134,16 +106,13 @@ function buildDayCard(dateStr, matchesForDay, state, watchPartyMatchIds, hasCatc
     </div>`;
 }
 
-// ─── Click handler ────────────────────────────────────────────────────────────
+// ─── Match row click handler ──────────────────────────────────────────────────
 function handleMatchRowClick(e) {
   const row = e.currentTarget;
   const home = row.dataset.home;
   const away = row.dataset.away;
   const matchId = row.dataset.matchId || null;
 
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-
-  // Show bar list, filter its category blocks (scoped — don't touch watchPartyList's block)
   document.getElementById('barList').classList.remove('hidden');
   document.querySelectorAll('#barList .category-block').forEach(block => {
     const blockNations = (block.dataset.nations || '').split(',');
@@ -151,16 +120,16 @@ function handleMatchRowClick(e) {
     block.classList.toggle('hidden', !isMatch);
   });
 
-  // Show watch parties for this match (if any), hidden otherwise
   const allWPs = window._watchPartiesData || [];
   const matchWPs = allWPs.filter(wp => {
     const wpHome = (wp.home_team || '').toLowerCase().trim();
     const wpAway = (wp.away_team || '').toLowerCase().trim();
     const isCatchAll = !wp.match_id || !wp.match_id.trim();
     return isCatchAll
-        || (matchId && wp.match_id && wp.match_id.trim() === matchId.trim())
-        || (wpHome && wpAway && wpHome === home && wpAway === away);
+      || (matchId && wp.match_id && wp.match_id.trim() === matchId.trim())
+      || (wpHome && wpAway && wpHome === home && wpAway === away);
   });
+
   const wpList = document.getElementById('watchPartyList');
   if (wpList) {
     if (matchWPs.length) {
@@ -189,8 +158,6 @@ function buildMatchCarousel(matches, watchParties) {
   const watchPartyMatchIds = new Set(
     (watchParties || []).map(wp => wp.match_id).filter(Boolean)
   );
-
-  // If any watch party has no match_id, it applies to every match
   const hasCatchAll = (watchParties || []).some(wp => !wp.match_id || !wp.match_id.trim());
 
   const matchById = {};
@@ -211,32 +178,26 @@ function buildMatchCarousel(matches, watchParties) {
 
   const byDate = {};
   matches.forEach(m => {
-    const key = m.date || 'unknown';
+    const key = (m.date || '').includes('T') ? m.date.split('T')[0] : (m.date || 'unknown');
     if (!byDate[key]) byDate[key] = [];
     byDate[key].push(m);
   });
 
   const track = document.getElementById('matchTrack');
-
-  // Determine if any day is actually today or soon
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const allDates = Object.keys(byDate).map(d => parseLocalDate(d)).filter(Boolean);
   const firstMatchDate = allDates.length ? new Date(Math.min(...allDates.map(d => d.getTime()))) : null;
   const beforeTournament = firstMatchDate && today < firstMatchDate;
-
   let firstFutureDone = false;
 
   track.innerHTML = Object.entries(byDate).map(([dateStr, dayMatches]) => {
     const date = parseLocalDate(dateStr);
     let state = date ? getDayState(date) : 'future';
-
-    // If we're before the tournament starts, highlight the first day as 'today'
     if (beforeTournament && state === 'future' && !firstFutureDone) {
       state = 'today';
       firstFutureDone = true;
     }
-
     return buildDayCard(dateStr, dayMatches, state, watchPartyMatchIds, hasCatchAll);
   }).join('');
 
@@ -258,92 +219,4 @@ function buildMatchCarousel(matches, watchParties) {
   document.getElementById('matchNext').addEventListener('click', () => {
     track.parentElement.scrollBy({ left: 300, behavior: 'smooth' });
   });
-}
-
-// ─── Load matches + watch parties together ────────────────────────────────────
-async function loadMatchesAndWatchParties() {
-  const LS_MATCHES = 'wc_matches_cache';
-  const LS_WP      = 'wc_wp_cache';
-  const LS_TS      = 'wc_matches_ts';
-  const TTL        = 24 * 60 * 60 * 1000; // 24 hours
-
-  const fetchCSV = async (url) => {
-    if (!url) throw new Error('No URL');
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    try {
-      const res = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeout);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.text();
-    } catch (e) {
-      clearTimeout(timeout);
-      throw e;
-    }
-  };
-
-  let matches = [];
-  let watchParties = [];
-
-  try {
-    const [matchText, wpText] = await Promise.all([
-      fetchCSV(MATCHES_CSV_URL),
-      fetchCSV(WATCH_PARTIES_CSV_URL).catch(() => null),
-    ]);
-    matches = parseMatchesCSV(matchText);
-    if (wpText) watchParties = parseWatchPartiesCSV(wpText);
-
-    // Save to localStorage for offline fallback
-    try {
-      localStorage.setItem(LS_MATCHES, JSON.stringify(matches));
-      localStorage.setItem(LS_WP, JSON.stringify(watchParties));
-      localStorage.setItem(LS_TS, Date.now().toString());
-    } catch (e) { /* storage full — ignore */ }
-
-  } catch (err) {
-    console.warn('Matches fetch failed, trying localStorage cache:', err);
-
-    // Try localStorage fallback
-    try {
-      const cachedMatches = localStorage.getItem(LS_MATCHES);
-      const cachedWP      = localStorage.getItem(LS_WP);
-      const ts            = localStorage.getItem(LS_TS);
-      if (cachedMatches && ts && (Date.now() - Number(ts)) < TTL) {
-        matches      = JSON.parse(cachedMatches);
-        watchParties = cachedWP ? JSON.parse(cachedWP) : [];
-        console.log('Matches loaded from localStorage cache');
-      }
-    } catch (e) { /* bad cache — ignore */ }
-  }
-
-  buildMatchCarousel(matches, watchParties);
-
-  // Enrich watch parties with match data derived from match_id
-  const matchById = window._matchById || {};
-  const enrichedWatchParties = watchParties.map(wp => {
-    const match = matchById[wp.match_id];
-    if (match) {
-      return {
-        ...wp,
-        home_team:  match.home_team,
-        away_team:  match.away_team,
-        match_date: match.date,
-        match_time: match.time,
-      };
-    }
-    return wp;
-  });
-
-  window._watchPartiesData = enrichedWatchParties;
-
-  // Poll for gMap to be initialized before placing OSG Events markers
-  // Poll until gMap is ready, then place markers
-  const tryPlaceWatchParties = () => {
-    if (window._gMapReady) {
-      window.buildWatchPartyMarkers(enrichedWatchParties);
-    } else {
-      setTimeout(tryPlaceWatchParties, 200);
-    }
-  };
-  setTimeout(tryPlaceWatchParties, 200);
 }

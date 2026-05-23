@@ -25,9 +25,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject Maps API key
+      - name: Inject API keys
         run: |
           echo "const MAPS_API_KEY = \"${{ secrets.MAPS_API_KEY }}\";" >> js/constants.js
+          echo "const AIRTABLE_API_KEY = \"${{ secrets.AIRTABLE_API_KEY }}\";" >> js/constants.js
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
