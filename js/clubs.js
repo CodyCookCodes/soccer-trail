@@ -2,11 +2,7 @@
 // To add a club:
 //   1. Add an entry below with the slug matching the URL you want (/club/?team=SLUG)
 //   2. Set sheet_id to the published Google Sheet ID
-//   3. Add the club pin to map.html CLUBS array
-//   4. Done — no other files need to change
-//
-// sheet_id: the long ID from the Google Sheets published CSV URL
-// e.g. https://docs.google.com/spreadsheets/d/e/SHEET_ID/pub?...
+//   3. Done — no other files need to change
 // ─────────────────────────────────────────────────────────────────────────────
 
 const CLUBS_REGISTRY = {
@@ -41,7 +37,7 @@ const CLUBS_REGISTRY = {
     name:    'Birmingham Legion FC',
     city:    'Birmingham',
     region:  'Birmingham, AL',
-    color:   '#00245D',
+    color:   '#C8A96E',
     center:  { lat: 33.5276, lng: -86.8081 },
     live:    true,
     sheet_id: null,
@@ -158,7 +154,7 @@ const CLUBS_REGISTRY = {
     name:    'Lexington SC',
     city:    'Lexington',
     region:  'Lexington, KY',
-    color:   '#00205B',
+    color:   '#00B388',
     center:  { lat: 38.0064, lng: -84.4239 },
     live:    true,
     sheet_id: null,
@@ -223,7 +219,7 @@ const CLUBS_REGISTRY = {
     name:    'New Mexico United',
     city:    'Albuquerque',
     region:  'Albuquerque, NM',
-    color:   '#231F20',
+    color:   '#5B2D8E',
     center:  { lat: 35.0694, lng: -106.6292 },
     live:    true,
     sheet_id: null,
@@ -275,7 +271,7 @@ const CLUBS_REGISTRY = {
     name:    'Rhode Island FC',
     city:    'Providence',
     region:  'Providence, RI',
-    color:   '#00245D',
+    color:   '#F5A800',
     center:  { lat: 41.8742, lng: -71.3789 },
     live:    true,
     sheet_id: null,
@@ -301,7 +297,7 @@ const CLUBS_REGISTRY = {
     name:    'San Antonio FC',
     city:    'San Antonio',
     region:  'San Antonio, TX',
-    color:   '#002B5C',
+    color:   '#003087',
     center:  { lat: 29.5542, lng: -98.3794 },
     live:    true,
     sheet_id: null,
@@ -340,7 +336,7 @@ const CLUBS_REGISTRY = {
     name:    'FC Tulsa',
     city:    'Tulsa',
     region:  'Tulsa, OK',
-    color:   '#002B5C',
+    color:   '#C8102E',
     center:  { lat: 36.1600, lng: -95.9939 },
     live:    true,
     sheet_id: null,
